@@ -102,7 +102,8 @@ class Connection
         return $resp;
     }
 
-    protected function addXUwActAs() {
+    protected function addXUwActAs()
+    {
         // Grab the remote user, for inclusion on the
         if (array_key_exists("REMOTE_USER", $_SERVER)) {
 
