@@ -13,6 +13,7 @@ class Connection
 {
     protected $baseurl;
     protected $curl;
+    protected $options = [];
 
     public function __construct($baseurl, $sslkey, $sslcert, $sslkeypasswd = null)
     {
@@ -66,9 +67,11 @@ class Connection
         }
 
         // Set request options
-        curl_setopt_array($this->curl, array(
+        $this->addOptions([
             CURLOPT_URL => $url,
-        ));
+            CURLOPT_POST => false,
+            CURLOPT_POSTFIELDS => [],
+        ]);
 
         return $this->exec();
     }
@@ -84,22 +87,18 @@ class Connection
     {
         $url = $this->baseurl . $url;
 
-        // Set request options
-        curl_setopt_array($this->curl, array(
+        $this->addOptions([
             CURLOPT_URL => $url,
             CURLOPT_POST => true,
             CURLOPT_POSTFIELDS => $params,
-        ));
+        ]);
 
-        // Execute the request
-        $resp = $this->exec();
+        return $this->exec();
+    }
 
-        // Unset POST related options
-        curl_setopt_array($this->curl, array(
-            CURLOPT_POST => false,
-        ));
-
-        return $resp;
+    protected function addOptions(array $options)
+    {
+        $this->options = $this->options + $options;
     }
 
     protected function addXUwActAs()
@@ -110,13 +109,19 @@ class Connection
             $user = $_SERVER["REMOTE_USER"];
             $user = strtok($user, '@');
 
-            curl_setopt($this->curl, CURLOPT_HTTPHEADER, ["X-UW-ACT-AS: $user"]);
+            if (!array_key_exists(CURLOPT_HTTPHEADER, $this->options)) {
+                $this->options[CURLOPT_HTTPHEADER] = [];
+            }
+
+            $this->options[CURLOPT_HTTPHEADER][] = ["X-UW-ACT-AS: $user"];
         }
     }
 
     protected function exec()
     {
         $this->addXUwActAs();
+
+        curl_setopt_array($this->curl, $this->options);
 
         $resp = curl_exec($this->curl);
 
