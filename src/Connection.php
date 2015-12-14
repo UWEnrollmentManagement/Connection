@@ -1,6 +1,6 @@
 <?php
 
-namespace UWDOEM\Person;
+namespace UWDOEM\Connection;
 
 /**
  * Class Connection
@@ -11,63 +11,10 @@ namespace UWDOEM\Person;
  */
 class Connection
 {
-    protected static $personInstance;
-    protected static $studentInstance;
-
     protected $baseurl;
     protected $curl;
 
-    /**
-     * @return static Curl connection container.
-     * @throws \Exception if ::getInstance is called before connection is intialized via ::createInstance
-     */
-    public static function getPersonInstance()
-    {
-        if (empty(static::$personInstance)) {
-            throw new \Exception(
-                'Connection::getInstance() called before initialization. ' .
-                'Call Connection::createInstance($sslkey, $sslcert, $sslkeypasswd) before ::getInstance().'
-            );
-        }
-        return static::$personInstance;
-    }
-
-    /**
-     * @return Connection Curl connection container.
-     * @throws \Exception if ::getInstance is called before connection is intialized via ::createInstance
-     */
-    public static function getStudentInstance()
-    {
-        if (empty(static::$studentInstance)) {
-            throw new \Exception(
-                'Connection::getInstance() called before initialization. ' .
-                'Call Connection::createInstance($sslkey, $sslcert, $sslkeypasswd) before ::getInstance().'
-            );
-        }
-        return static::$studentInstance;
-    }
-
-    /**
-     * @param string $sslkey Absolute path to the protected SSL key used to authenticate your app to PWS or SWS.
-     * @param string $sslcert Absolute path to the certificate file used to authenticate your app to PWS or SWS.
-     * @param string|null $sslkeypasswd (Optional) Password for your protected key file.
-     * @throws \Exception if you attempt to intialize the connection more than one time in a page-load via
-     *         ::createInstance
-     */
-    public static function createInstance($baseurl, $sslkey, $sslcert, $sslkeypasswd = null)
-    {
-        if (!empty(self::$personInstance)) {
-            throw new \Exception(
-                'Connection::createInstance() called more than once. ' .
-                'Only one connection may be created. '
-            );
-        }
-
-        self::$personInstance = new static($baseurl . "identity/v1/", $sslkey, $sslcert, $sslkeypasswd);
-        self::$studentInstance = new static($baseurl . "student/v5/", $sslkey, $sslcert, $sslkeypasswd);
-    }
-
-    protected function __construct($baseurl, $sslkey, $sslcert, $sslkeypasswd = null)
+    public function __construct($baseurl, $sslkey, $sslcert, $sslkeypasswd = null)
     {
 
         $this->baseurl = $baseurl;
@@ -155,9 +102,7 @@ class Connection
         return $resp;
     }
 
-    protected function exec()
-    {
-
+    protected function addXUwActAs() {
         // Grab the remote user, for inclusion on the
         if (array_key_exists("REMOTE_USER", $_SERVER)) {
 
@@ -166,6 +111,11 @@ class Connection
 
             curl_setopt($this->curl, CURLOPT_HTTPHEADER, ["X-UW-ACT-AS: $user"]);
         }
+    }
+
+    protected function exec()
+    {
+        $this->addXUwActAs();
 
         $resp = curl_exec($this->curl);
 
