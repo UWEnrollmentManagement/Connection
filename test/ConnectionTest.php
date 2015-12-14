@@ -14,7 +14,7 @@ class MockConnection extends Connection {
 
     protected function makeSlug($url) {
         $url = str_replace([$this->baseurl], [""], $url);
-        $url = str_replace(["?", "/", ".", "="], ["-", "-", "-", "-"], $url);
+        $url = str_replace(["?", "&", "/", ".", "="], ["-q-", "-and-", "-", "-", "-"], $url);
 
         if (strlen($url) > 63) {
             $url = md5($url);
@@ -37,7 +37,6 @@ class MockConnection extends Connection {
 
 class ConnectionTest extends PHPUnit_Framework_TestCase
 {
-
     /**
      * @expectedException              \Exception
      * @expectedExceptionMessageRegExp #No such file found for SSL key at.*#
@@ -64,26 +63,26 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
         );
     }
 
-    public function testCreateInstance() {
-
-        $connection = new MockConnection(
+    protected function makeConnection()
+    {
+        return new MockConnection(
             "http://localhost/",
             getcwd() . "/test/test-certs/self.signed.test.certs.key",
             getcwd() . "/test/test-certs/self.signed.test.certs.crt",
             "self-signed-password"
         );
+    }
+
+    public function testCreateInstance()
+    {
+        $connection = $this->makeConnection();
 
         $this->assertTrue($connection instanceof Connection);
     }
 
-    public function testGet() {
-
-        $connection = new MockConnection(
-            "http://localhost/",
-            getcwd() . "/test/test-certs/self.signed.test.certs.key",
-            getcwd() . "/test/test-certs/self.signed.test.certs.crt",
-            "self-signed-password"
-        );
+    public function testGet()
+    {
+        $connection = $this->makeConnection();
 
         $resp = $connection->execGET("person-javerage-full.json");
         $resp = json_decode($resp, true);
@@ -93,14 +92,21 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(0, $connection->getOptions()[CURLOPT_POST]);
     }
 
-    public function testPost() {
+    public function testGetParams()
+    {
+        $connection = $this->makeConnection();
 
-        $connection = new MockConnection(
-            "http://localhost/",
-            getcwd() . "/test/test-certs/self.signed.test.certs.key",
-            getcwd() . "/test/test-certs/self.signed.test.certs.crt",
-            "self-signed-password"
-        );
+        $resp = $connection->execGET("person-javerage-full.json", ["first" => 1, "second" => 2]);
+        $resp = json_decode($resp, true);
+
+        $this->assertEquals("James Average Student", $resp["DisplayName"]);
+
+        $this->assertEquals(0, $connection->getOptions()[CURLOPT_POST]);
+    }
+
+    public function testPost()
+    {
+        $connection = $this->makeConnection();
 
         $resp = $connection->execPOST("person-javerage-full.json");
         $resp = json_decode($resp, true);
