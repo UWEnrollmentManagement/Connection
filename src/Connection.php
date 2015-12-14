@@ -113,7 +113,7 @@ class Connection
                 $this->options[CURLOPT_HTTPHEADER] = [];
             }
 
-            $this->options[CURLOPT_HTTPHEADER][] = ["X-UW-ACT-AS: $user"];
+            $this->options[CURLOPT_HTTPHEADER][] = "X-UW-ACT-AS: $user";
         }
     }
 

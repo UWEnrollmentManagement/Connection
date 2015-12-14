@@ -115,4 +115,20 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(1, $connection->getOptions()[CURLOPT_POST]);
     }
+
+    public function testXUwActAs()
+    {
+        $connection = $this->makeConnection();
+
+        $user = "u" . (string)rand();
+
+        $_SERVER["REMOTE_USER"] = $user;
+
+        $resp = $connection->execGET("person-javerage-full.json", ["first" => 1, "second" => 2]);
+        $resp = json_decode($resp, true);
+
+        $this->assertEquals("James Average Student", $resp["DisplayName"]);
+
+        $this->assertContains("X-UW-ACT-AS: $user", $connection->getOptions()[CURLOPT_HTTPHEADER]);
+    }
 }
