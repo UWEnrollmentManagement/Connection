@@ -5,46 +5,63 @@ namespace UWDOEM\Connection;
 /**
  * Class Connection
  *
- * Singleton class representing our connections to Person Web Service and Student Web Service
+ * Container class representing a connection to a UW web service
  *
- * @package UWDOEM\Person
+ * @package UWDOEM\Connection
  */
 class Connection
 {
-    protected $baseurl;
+    /** @var string */
+    protected $baseUrl;
+
+    /** @var resource */
     protected $curl;
+
+    /** @var array */
     protected $options = [];
 
-    public function __construct($baseurl, $sslkey, $sslcert, $sslkeypasswd = null)
+    /**
+     * @param string      $baseUrl
+     * @param string      $sslKey
+     * @param string      $sslCert
+     * @param string|null $sslKeyPassword
+     * @throws \Exception If the provided $sslKey or $sslCert paths are not valid.
+     */
+    public function __construct($baseUrl, $sslKey, $sslCert, $sslKeyPassword = null)
     {
 
-        $this->baseurl = $baseurl;
+        $this->baseUrl = $baseUrl;
 
-        if (!file_exists($sslkey)) {
-            throw new \Exception("No such file found for SSL key at $sslkey.");
+        if (!file_exists($sslKey)) {
+            throw new \Exception("No such file found for SSL key at $sslKey.");
         }
 
-        if (!file_exists($sslcert)) {
-            throw new \Exception("No such file found for SSL certificate at $sslcert.");
+        if (!file_exists($sslCert)) {
+            throw new \Exception("No such file found for SSL certificate at $sslCert.");
         }
 
         // Get cURL resource
         $this->curl = curl_init();
 
         // Set cURL parameters
-        curl_setopt_array($this->curl, array(
-            CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_SSLKEY => $sslkey,
-            CURLOPT_SSLCERT => $sslcert,
-        ));
+        $this->addOptions(
+            [
+                CURLOPT_RETURNTRANSFER => 1,
+                CURLOPT_SSLKEY => $sslKey,
+                CURLOPT_SSLCERT => $sslCert,
+            ]
+        );
 
-        if (!is_null($sslkeypasswd)) {
-            curl_setopt_array($this->curl, array(
-                CURLOPT_SSLKEYPASSWD => $sslkeypasswd,
-            ));
+        if (!is_null($sslKeyPassword)) {
+            $this->addOptions([
+                CURLOPT_SSLKEYPASSWD => $sslKeyPassword,
+            ]);
         }
     }
 
+    /**
+     * @return void
+     */
     public function __destruct()
     {
         curl_close($this->curl);
@@ -53,13 +70,13 @@ class Connection
     /**
      * Execute a GET request to a given URL, with optional parameters.
      *
-     * @param string $url
-     * @param string[] $params Array of query parameter $key=>$value pairs
+     * @param string   $url
+     * @param string[] $params Array of query parameter $key=>$value pairs.
      * @return mixed The server's response
      */
-    public function execGET($url, $params = [])
+    public function execGET($url, array $params = [])
     {
-        $url = $this->baseurl . $url;
+        $url = $this->baseUrl . $url;
 
         // Build the query from the parameters
         if ($params) {
@@ -79,13 +96,13 @@ class Connection
     /**
      * Execute a POST request to a given URL, with optional parameters.
      *
-     * @param string $url
-     * @param string[] $params Array of POST parameter $key=>$value pairs
-     * @return mixed The server's response
+     * @param string   $url
+     * @param string[] $params Array of POST parameter $key=>$value pairs.
+     * @return mixed The server's response.
      */
-    public function execPOST($url, $params = [])
+    public function execPOST($url, array $params = [])
     {
-        $url = $this->baseurl . $url;
+        $url = $this->baseUrl . $url;
 
         $this->addOptions([
             CURLOPT_URL => $url,
@@ -96,11 +113,18 @@ class Connection
         return $this->exec();
     }
 
+    /**
+     * @param array $options
+     * @return void
+     */
     protected function addOptions(array $options)
     {
         $this->options = $this->options + $options;
     }
 
+    /**
+     * @return void
+     */
     protected function addXUwActAs()
     {
         // Grab the remote user, for inclusion on the
@@ -117,6 +141,10 @@ class Connection
         }
     }
 
+    /**
+     * @return mixed
+     * @throws \Exception If cURL encounters an error.
+     */
     protected function exec()
     {
         $this->addXUwActAs();

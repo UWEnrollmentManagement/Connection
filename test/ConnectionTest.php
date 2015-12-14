@@ -13,7 +13,7 @@ class MockConnection extends Connection {
     }
 
     protected function makeSlug($url) {
-        $url = str_replace([$this->baseurl], [""], $url);
+        $url = str_replace([$this->baseUrl], [""], $url);
         $url = str_replace(["?", "&", "/", ".", "="], ["-q-", "-and-", "-", "-", "-"], $url);
 
         if (strlen($url) > 63) {
