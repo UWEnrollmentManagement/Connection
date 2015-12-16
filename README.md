@@ -5,9 +5,9 @@
 [![Latest Stable Version](https://poser.pugx.org/uwdoem/connection/v/stable)](https://packagist.org/packages/uwdoem/connection)
 
 UWDOEM/Connection
-=============
+=================
 
-Helper library for connecting to the university's x.509 secured web services.
+Connection is a PHP helper library for connecting to the university's x.509 secured web services. Connection is used by [uwdoem/person](https://github.com/UWEnrollmentManagement/Person) to connect to the university's person and student web services.
 
 
 Troubleshooting
@@ -37,17 +37,18 @@ No such file found for SSL key/certificate
 **Solution**: Ensure that you provided the correct path to these files and that your web-server process has read-access to these files.
 
 Script execution halts/no output
-----------------------
+--------------------------------
 
 **Problem**: This might be caused by an internal error in cURL while accessing your private key/certificate which causes PHP to die unexpectedly.
 
 **Solution**: I was able to solve this by setting permissions on my key/certificate to read only. Specifically, I turned off write access for all parties.
 
 
-Compatibility
-=============
+Requirements
+============
 
 * PHP 5.5, 5.6, 7.0
+* cURL
 
 Todo
 ====
