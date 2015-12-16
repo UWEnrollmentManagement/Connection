@@ -119,7 +119,7 @@ class Connection implements ConnectionInterface
      */
     protected function addOptions(array $options)
     {
-        $this->options = $this->options + $options;
+        $this->options = $options + $this->options;
     }
 
     /**
