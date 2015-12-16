@@ -17,7 +17,7 @@ You can use *Connection* directly by including it in your `composer.json` file `
 ```
   "require": {
     ...
-    "uwdoem/connection": "1.*",
+    "uwdoem/connection": "2.*",
     ...
   },
 ```
