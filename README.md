@@ -9,35 +9,45 @@ UWDOEM/Connection
 
 Connection is a PHP helper library for connecting to the university's x.509 secured web services. Connection is used by [uwdoem/person](https://github.com/UWEnrollmentManagement/Person) to connect to the university's person and student web services.
 
+Installation
+------------
+
+You can use *Connection* directly by including it in your `composer.json` file `require` statements:
+
+```
+  "require": {
+    ...
+    "uwdoem/connection": "1.*",
+    ...
+  },
+```
+
+Of course it is possible to use *Connection* without Composer by downloading it directly, but use of Composer to manage packages is highly recommended. See [Composer](https://getcomposer.org/) for more information.
 
 Troubleshooting
-===============
+---------------
 
 This library *will* throw warnings and exceptions when it recognizes an error. Turn on error reporting to see these. The following conditions will halt execution:
 
-cURL Error Code 77
-------------------
+### cURL Error Code 77
 
 **Problem**: cURL cannot find the UWCA root certificate to verify the identify of the PWS/SWS servers.
 
 **Solution**: Download the [.crt root CA bundle](http://curl.haxx.se/docs/caextract.html) to your server, ensure that your web-server process has read access to this bundle, and uncomment/edit the `curl.cainfo` line in your *php.ini* to reflect the location of this bundle.
 
-cURL Error Code 58
-------------------
+### cURL Error Code 58
 
 **Problem**: cURL is having a problem using your private key.
 
 **Solution**: You may have provided an incorrect private key password to `::createConnection`. If your private key requires a password, provide one, and ensure that it is correct.
 
-No such file found for SSL key/certificate
-------------------------------------------
+### No such file found for SSL key/certificate
 
 **Problem**: Connection cannot find the key and/or certificate at the path you provided to `::createConnection`.
 
 **Solution**: Ensure that you provided the correct path to these files and that your web-server process has read-access to these files.
 
-Script execution halts/no output
---------------------------------
+### Script execution halts/no output
 
 **Problem**: This might be caused by an internal error in cURL while accessing your private key/certificate which causes PHP to die unexpectedly.
 
@@ -45,19 +55,19 @@ Script execution halts/no output
 
 
 Requirements
-============
+------------
 
 * PHP 5.5, 5.6, 7.0
 * cURL
 
 Todo
-====
+----
 
 See GitHub [issue tracker](https://github.com/UWEnrollmentManagement/Connection/issues/).
 
 
 Getting Involved
-================
+----------------
 
 Feel free to open pull requests or issues. [GitHub](https://github.com/UWEnrollmentManagement/Connection) is the canonical location of this project.
 
