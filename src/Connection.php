@@ -9,7 +9,7 @@ namespace UWDOEM\Connection;
  *
  * @package UWDOEM\Connection
  */
-class Connection
+class Connection implements ConnectionInterface
 {
     /** @var string */
     protected $baseUrl;
@@ -151,12 +151,20 @@ class Connection
 
         curl_setopt_array($this->curl, $this->options);
 
-        $resp = curl_exec($this->curl);
+        $resp = $this->doExec();
 
         if (curl_errno($this->curl)) {
             throw new \Exception('Request Error:' . curl_error($this->curl));
         }
 
         return $resp;
+    }
+
+    /**
+     * @return mixed
+     */
+    protected function doExec()
+    {
+        return curl_exec($this->curl);
     }
 }
