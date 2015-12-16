@@ -2,8 +2,6 @@
 
 namespace UWDOEM\Connection\Test;
 
-require_once dirname(__FILE__) ."/MockConnection.php";
-
 use PHPUnit_Framework_TestCase;
 
 use UWDOEM\Connection\Connection;

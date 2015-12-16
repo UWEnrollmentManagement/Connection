@@ -6,6 +6,11 @@
       "src/"
     ]
   },
+  "autoload-dev": {
+    "classmap": [
+      "test/"
+    ]
+  },
   "require-dev": {
     "uwdoem/standard": "*",
     "phpunit/phpunit": "4.5.*",
