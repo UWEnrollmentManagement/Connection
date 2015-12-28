@@ -86,8 +86,7 @@ class Connection implements ConnectionInterface
         // Set request options
         $this->addOptions([
             CURLOPT_URL => $url,
-            CURLOPT_POST => false,
-            CURLOPT_POSTFIELDS => [],
+            CURLOPT_HTTPGET => true,
         ]);
 
         return $this->exec();

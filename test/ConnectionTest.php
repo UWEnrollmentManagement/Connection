@@ -62,7 +62,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals("James Average Student", $resp["DisplayName"]);
 
-        $this->assertEquals(0, $connection->getOptions()[CURLOPT_POST]);
+        $this->assertEquals(1, $connection->getOptions()[CURLOPT_HTTPGET]);
     }
 
     public function testGetParams()
@@ -74,7 +74,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals("James Average Student", $resp["DisplayName"]);
 
-        $this->assertEquals(0, $connection->getOptions()[CURLOPT_POST]);
+        $this->assertEquals(1, $connection->getOptions()[CURLOPT_HTTPGET]);
     }
 
     public function testPost()
