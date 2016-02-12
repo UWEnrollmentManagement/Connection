@@ -32,11 +32,11 @@ class Connection implements ConnectionInterface
 
         $this->baseUrl = $baseUrl;
 
-        if (!file_exists($sslKey)) {
+        if (file_exists($sslKey) === false) {
             throw new \Exception("No such file found for SSL key at $sslKey.");
         }
 
-        if (!file_exists($sslCert)) {
+        if (file_exists($sslCert) === false) {
             throw new \Exception("No such file found for SSL certificate at $sslCert.");
         }
 
@@ -52,7 +52,7 @@ class Connection implements ConnectionInterface
             ]
         );
 
-        if (!is_null($sslKeyPassword)) {
+        if ($sslKeyPassword !== null) {
             $this->addOptions([
                 CURLOPT_SSLKEYPASSWD => $sslKeyPassword,
             ]);
@@ -79,7 +79,7 @@ class Connection implements ConnectionInterface
         $url = $this->baseUrl . $url;
 
         // Build the query from the parameters
-        if ($params) {
+        if ($params !== []) {
             $url .= '?' . http_build_query($params);
         }
 
@@ -127,12 +127,12 @@ class Connection implements ConnectionInterface
     protected function addXUwActAs()
     {
         // Grab the remote user, for inclusion on the
-        if (array_key_exists("REMOTE_USER", $_SERVER)) {
+        if (array_key_exists("REMOTE_USER", $_SERVER) === true) {
 
             $user = $_SERVER["REMOTE_USER"];
             $user = strtok($user, '@');
 
-            if (!array_key_exists(CURLOPT_HTTPHEADER, $this->options)) {
+            if (array_key_exists(CURLOPT_HTTPHEADER, $this->options) === false) {
                 $this->options[CURLOPT_HTTPHEADER] = [];
             }
 
@@ -152,7 +152,7 @@ class Connection implements ConnectionInterface
 
         $resp = $this->doExec();
 
-        if (curl_errno($this->curl)) {
+        if (curl_errno($this->curl) !== 0) {
             throw new \Exception('Request Error:' . curl_error($this->curl));
         }
 
