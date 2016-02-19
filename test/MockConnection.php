@@ -33,6 +33,6 @@ class MockConnection extends Connection
     {
         $url = curl_getinfo($this->curl, CURLINFO_EFFECTIVE_URL);
 
-        return file_get_contents(getcwd() . "/test/responses/{$this->makeSlug($url)}.json");
+        return file_get_contents(getcwd() . "/test/responses/{$this->makeSlug($url)}");
     }
 }
