@@ -20,14 +20,18 @@ class Connection implements ConnectionInterface
     /** @var array */
     protected $options = [];
 
-    /**
-     * @param string      $baseUrl
-     * @param string      $sslKey
-     * @param string      $sslCert
-     * @param string|null $sslKeyPassword
+    /** @var resource */
+    protected $logFile = null;
+
+/**
+     * @param string       $baseUrl
+     * @param string       $sslKey
+     * @param string       $sslCert
+     * @param string|null  $sslKeyPassword
+     * @param boolean|null $verbose
      * @throws \Exception If the provided $sslKey or $sslCert paths are not valid.
      */
-    public function __construct($baseUrl, $sslKey, $sslCert, $sslKeyPassword = null)
+    public function __construct($baseUrl, $sslKey, $sslCert, $sslKeyPassword = null, $verbose = false)
     {
 
         $this->baseUrl = $baseUrl;
@@ -56,6 +60,18 @@ class Connection implements ConnectionInterface
             $this->addOptions([
                 CURLOPT_SSLKEYPASSWD => $sslKeyPassword,
             ]);
+        }
+
+        if ($verbose === true) {
+            /** @var  $logResource */
+            $this->logFile = fopen('php://temp', 'w+');
+
+            $this->addOptions(
+                [
+                    CURLOPT_VERBOSE => 1,
+                    CURLOPT_STDERR => $this->logFile,
+                ]
+            );
         }
     }
 
@@ -128,7 +144,6 @@ class Connection implements ConnectionInterface
     {
         // Grab the remote user, for inclusion on the
         if (array_key_exists("REMOTE_USER", $_SERVER) === true) {
-
             $user = $_SERVER["REMOTE_USER"];
             $user = strtok($user, '@');
 
@@ -153,7 +168,14 @@ class Connection implements ConnectionInterface
         $resp = $this->doExec();
 
         if (curl_errno($this->curl) !== 0) {
-            throw new \Exception('Request Error:' . curl_error($this->curl));
+            $errorText = 'Request Error:' . curl_error($this->curl);
+
+            if ($this->logFile !== null) {
+                rewind($this->logFile);
+                $errorText .= " " . stream_get_contents($this->logFile);
+            }
+
+            throw new \Exception($errorText);
         }
 
         return $resp;
