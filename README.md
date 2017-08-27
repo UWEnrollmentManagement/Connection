@@ -47,6 +47,12 @@ This library *will* throw warnings and exceptions when it recognizes an error. T
 
 **Solution**: Ensure that you provided the correct path to these files and that your web-server process has read-access to these files.
 
+### Incorrect password for SSL key, but you're providing the correct SSL key password
+
+**Problem**: This might be caused by a bug in the system cURL, which might cache your SSL keys; it seems that cURL can confuse these keys and use apply the wrong password to a key.
+
+**Solution**: Only use one SSL key on one server, or make all SSL keys passwordless.
+
 ### Script execution halts/no output
 
 **Problem**: This might be caused by an internal error in cURL while accessing your private key/certificate which causes PHP to die unexpectedly.
