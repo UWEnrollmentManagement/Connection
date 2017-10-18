@@ -32,8 +32,15 @@ class Connection implements ConnectionInterface
      * @param array        $options
      * @throws \Exception If the provided $sslKey or $sslCert paths are not valid.
      */
-    public function __construct($baseUrl, $sslKey, $sslCert, $sslKeyPassword = null, $verbose = false, $options = [])
-    {
+    public function __construct(
+        $baseUrl,
+        $sslKey,
+        $sslCert,
+        $sslKeyPassword = null,
+        $verbose = false,
+        array $options = []
+    ) {
+    
 
         $this->baseUrl = $baseUrl;
 
