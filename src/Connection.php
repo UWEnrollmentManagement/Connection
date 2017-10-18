@@ -29,9 +29,10 @@ class Connection implements ConnectionInterface
      * @param string       $sslCert
      * @param string|null  $sslKeyPassword
      * @param boolean|null $verbose
+     * @param array        $options
      * @throws \Exception If the provided $sslKey or $sslCert paths are not valid.
      */
-    public function __construct($baseUrl, $sslKey, $sslCert, $sslKeyPassword = null, $verbose = false)
+    public function __construct($baseUrl, $sslKey, $sslCert, $sslKeyPassword = null, $verbose = false, $options = [])
     {
 
         $this->baseUrl = $baseUrl;
@@ -61,6 +62,8 @@ class Connection implements ConnectionInterface
                 CURLOPT_SSLKEYPASSWD => $sslKeyPassword,
             ]);
         }
+
+        $this->addOptions($options);
 
         if ($verbose === true) {
             /** @var  $logResource */

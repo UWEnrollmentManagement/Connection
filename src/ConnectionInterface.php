@@ -9,10 +9,12 @@ interface ConnectionInterface
      * @param string $baseUrl
      * @param string $sslKey
      * @param string $sslCert
-     * @param string $sslKeyPassword
+     * @param string|null $sslKeyPassword
+     * @param boolean|null $verbose
+     * @param array        $options
      * @throws \Exception If the provided $sslKey or $sslCert paths are not valid.
      */
-    public function __construct($baseUrl, $sslKey, $sslCert, $sslKeyPassword = "");
+    public function __construct($baseUrl, $sslKey, $sslCert, $sslKeyPassword = null, $vendor=null, $options=[]);
 
     /** @return void */
     public function __destruct();
