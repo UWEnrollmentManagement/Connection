@@ -1,6 +1,13 @@
 {
   "name": "uwdoem/connection",
   "description": "Helper library for connecting to the university's x.509 secured web services",
+  "authors": [
+      {
+          "name": "Page Bonifaci",
+          "email": "BonPacific@protonmail.com",
+          "role": "Developer"
+      }
+  ],
   "autoload": {
     "classmap": [
       "src/"
