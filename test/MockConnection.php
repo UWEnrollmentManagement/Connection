@@ -32,7 +32,8 @@ class MockConnection extends Connection
     protected function doExec()
     {
         $url = curl_getinfo($this->curl, CURLINFO_EFFECTIVE_URL);
-
-        return file_get_contents(getcwd() . "/test/responses/{$this->makeSlug($url)}");
+        $info = curl_getinfo($this->curl);
+        $data = file_get_contents(getcwd() . "/test/responses/{$this->makeSlug($url)}");
+        return new \UWDOEM\Connection\ConnectionReturn($data, $info);
     }
 }

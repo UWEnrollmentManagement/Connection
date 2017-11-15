@@ -36,13 +36,17 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
         );
     }
 
-    protected function makeConnection()
+    protected function makeConnection($options = [])
     {
+
+
         return new MockConnection(
             "http://localhost/",
             getcwd() . "/test/test-certs/self.signed.test.certs.key",
             getcwd() . "/test/test-certs/self.signed.test.certs.crt",
-            "self-signed-password"
+            "self-signed-password",
+            true,
+            $options
         );
     }
 
@@ -58,9 +62,11 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
         $connection = $this->makeConnection();
 
         $resp = $connection->execGET("person-javerage-full.json");
-        $resp = json_decode($resp, true);
+        $data = json_decode($resp->getData(), true);
 
-        $this->assertEquals("James Average Student", $resp["DisplayName"]);
+        $this->assertEquals("http://localhost/person-javerage-full.json", $resp->getInfo()["url"]);
+
+        $this->assertEquals("James Average Student", $data["DisplayName"]);
 
         $this->assertEquals(1, $connection->getOptions()[CURLOPT_HTTPGET]);
     }
@@ -70,9 +76,11 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
         $connection = $this->makeConnection();
 
         $resp = $connection->execGET("person-javerage-full.json", ["first" => 1, "second" => 2]);
-        $resp = json_decode($resp, true);
+        $data = json_decode($resp->getData(), true);
 
-        $this->assertEquals("James Average Student", $resp["DisplayName"]);
+        $this->assertEquals("http://localhost/person-javerage-full.json?first=1&second=2", $resp->getInfo()["url"]);
+
+        $this->assertEquals("James Average Student", $data["DisplayName"]);
 
         $this->assertEquals(1, $connection->getOptions()[CURLOPT_HTTPGET]);
     }
@@ -82,25 +90,31 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
         $connection = $this->makeConnection();
 
         $resp = $connection->execPOST("person-javerage-full.json");
-        $resp = json_decode($resp, true);
+        $data = json_decode($resp->getData(), true);
 
-        $this->assertEquals("James Average Student", $resp["DisplayName"]);
+        $this->assertEquals("http://localhost/person-javerage-full.json", $resp->getInfo()["url"]);
+
+        $this->assertEquals("James Average Student", $data["DisplayName"]);
 
         $this->assertEquals(1, $connection->getOptions()[CURLOPT_POST]);
     }
 
     public function testXUwActAs()
     {
-        $connection = $this->makeConnection();
+
 
         $user = "u" . (string)rand();
 
         $_SERVER["REMOTE_USER"] = $user;
 
-        $resp = $connection->execGET("person-javerage-full.json", ["first" => 1, "second" => 2]);
-        $resp = json_decode($resp, true);
+        $options = [CURLOPT_HTTPHEADER => ["X-UW-ACT-AS: $user"]];
 
-        $this->assertEquals("James Average Student", $resp["DisplayName"]);
+        $connection = $this->makeConnection($options);
+
+        $resp = $connection->execGET("person-javerage-full.json", ["first" => 1, "second" => 2]);
+        $data = json_decode($resp->getData(), true);
+
+        $this->assertEquals("James Average Student", $data["DisplayName"]);
 
         $this->assertContains("X-UW-ACT-AS: $user", $connection->getOptions()[CURLOPT_HTTPHEADER]);
     }

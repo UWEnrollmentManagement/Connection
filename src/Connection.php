@@ -60,7 +60,7 @@ class Connection implements ConnectionInterface
             [
                 CURLOPT_RETURNTRANSFER => 1,
                 CURLOPT_SSLKEY => $sslKey,
-                CURLOPT_SSLCERT => $sslCert,
+                CURLOPT_SSLCERT => $sslCert
             ]
         );
 
@@ -98,7 +98,7 @@ class Connection implements ConnectionInterface
      *
      * @param string   $url
      * @param string[] $params Array of query parameter $key=>$value pairs.
-     * @return mixed The server's response
+     * @return ConnectionReturn The server's response
      */
     public function execGET($url, array $params = [])
     {
@@ -123,7 +123,7 @@ class Connection implements ConnectionInterface
      *
      * @param string   $url
      * @param string[] $params Array of POST parameter $key=>$value pairs.
-     * @return mixed The server's response.
+     * @return ConnectionReturn The server's response.
      */
     public function execPOST($url, array $params = [])
     {
@@ -150,28 +150,28 @@ class Connection implements ConnectionInterface
     /**
      * @return void
      */
-    protected function addXUwActAs()
-    {
-        // Grab the remote user, for inclusion on the
-        if (array_key_exists("REMOTE_USER", $_SERVER) === true) {
-            $user = $_SERVER["REMOTE_USER"];
-            $user = strtok($user, '@');
-
-            if (array_key_exists(CURLOPT_HTTPHEADER, $this->options) === false) {
-                $this->options[CURLOPT_HTTPHEADER] = [];
-            }
-
-            $this->options[CURLOPT_HTTPHEADER][] = "X-UW-ACT-AS: $user";
-        }
-    }
+//    protected function addXUwActAs()
+//    {
+//        // Grab the remote user, for inclusion on the
+//        if (array_key_exists("REMOTE_USER", $_SERVER) === true) {
+//            $user = $_SERVER["REMOTE_USER"];
+//            $user = strtok($user, '@');
+//
+//            if (array_key_exists(CURLOPT_HTTPHEADER, $this->options) === false) {
+//                $this->options[CURLOPT_HTTPHEADER] = [];
+//            }
+//
+//            $this->options[CURLOPT_HTTPHEADER][] = "X-UW-ACT-AS: $user";
+//        }
+//    }
 
     /**
-     * @return mixed
+     * @return ConnectionReturn
      * @throws \Exception If cURL encounters an error.
      */
     protected function exec()
     {
-        $this->addXUwActAs();
+//        $this->addXUwActAs();
 
         curl_setopt_array($this->curl, $this->options);
 
@@ -192,10 +192,12 @@ class Connection implements ConnectionInterface
     }
 
     /**
-     * @return mixed
+     * @return ConnectionReturn
      */
     protected function doExec()
     {
-        return curl_exec($this->curl);
+        $resp = curl_exec($this->curl);
+        $info = curl_getinfo($this->curl);
+        return new ConnectionReturn($resp, $info);
     }
 }
