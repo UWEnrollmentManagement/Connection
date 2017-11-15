@@ -148,31 +148,11 @@ class Connection implements ConnectionInterface
     }
 
     /**
-     * @return void
-     */
-//    protected function addXUwActAs()
-//    {
-//        // Grab the remote user, for inclusion on the
-//        if (array_key_exists("REMOTE_USER", $_SERVER) === true) {
-//            $user = $_SERVER["REMOTE_USER"];
-//            $user = strtok($user, '@');
-//
-//            if (array_key_exists(CURLOPT_HTTPHEADER, $this->options) === false) {
-//                $this->options[CURLOPT_HTTPHEADER] = [];
-//            }
-//
-//            $this->options[CURLOPT_HTTPHEADER][] = "X-UW-ACT-AS: $user";
-//        }
-//    }
-
-    /**
      * @return ConnectionReturn
      * @throws \Exception If cURL encounters an error.
      */
     protected function exec()
     {
-//        $this->addXUwActAs();
-
         curl_setopt_array($this->curl, $this->options);
 
         $resp = $this->doExec();
